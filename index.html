@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>الآغا لقراءة الملفات</title>
+    <!-- ربط ملف CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <div class="header">
+            <h1>📂 الآغا لقراءة الملفات</h1>
+            <div class="toolbar-icons">
+                <button id="darkModeBtn" class="icon-btn">🌙 ليلي</button>
+                <button id="fontUpBtn" class="icon-btn">🔍+ تكبير</button>
+                <button id="fontDownBtn" class="icon-btn">🔍- تصغير</button>
+                <button id="randomBtn" class="icon-btn">🎲 عشوائي</button>
+                <button id="densityBtn" class="icon-btn">📄 كثيف</button>
+            </div>
+        </div>
+
+        <div id="dropZone" class="drop-zone">
+            <p>📂 اسحب وأفلت ملف JSON هنا</p>
+            <button id="pickFileBtn" class="btn">➕ اختر ملف</button>
+            <input type="file" id="fileInput" accept=".json" style="display:none">
+        </div>
+
+        <div id="appArea" class="hidden">
+            <div class="toolbar">
+                <button id="removeBtn" class="btn btn-danger">🗑️ إزالة</button>
+                <button id="switchBtn" class="btn btn-secondary">🔄 تبديل</button>
+                <button id="showFavBtn" class="btn">⭐ مفضلة فقط</button>
+                <button id="showAllBtn" class="btn">📋 الكل</button>
+                <button id="exportBtn" class="btn">📎 تصدير</button>
+                <button id="statsBtn" class="btn">📊 إحصائيات</button>
+                <button id="exportFavBtn" class="btn">💾 حفظ المفضلة</button>
+                <button id="importFavBtn" class="btn">📂 استيراد مفضلة</button>
+            </div>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 ابحث في الأحاديث...">
+            </div>
+            <div class="info-bar">
+                <span id="statsSpan" class="stats"></span>
+                <select id="quickIndex" class="index-select"><option>📑 فهرس سريع</option></select>
+            </div>
+            <div id="hadithContainer" class="hadith-list"></div>
+        </div>
+        <div class="footer">✨ جميع الميزات تعمل بدون إنترنت</div>
+    </div>
+</div>
+<button id="scrollTopBtn" class="fab hidden">↑</button>
+
+<!-- ربط ملف الجافاسكريبت مع التأخير لضمان تحميل DOM -->
+<script src="js/script.js" defer></script>
+</body>
+</html>
