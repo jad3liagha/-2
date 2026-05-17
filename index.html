@@ -1,58 +1,613 @@
 <!DOCTYPE html>
 <html dir="rtl" lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>الآغا لقراءة الملفات</title>
-    <!-- ربط ملف CSS -->
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>الآغا لقراءة الملفات</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #fef9e8;
+      padding: 20px;
+      transition: background 0.3s, color 0.2s;
+    }
+    body.dark {
+      background: #121212;
+      color: #e0e0e0;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .card {
+      background: white;
+      border-radius: 28px;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    body.dark .card {
+      background: #1e1e2a;
+    }
+    .header {
+      background: linear-gradient(135deg, #2c3e2f, #1e3a2e);
+      color: #f7f3e0;
+      padding: 20px;
+      text-align: center;
+    }
+    .header h1 {
+      font-size: 1.8rem;
+    }
+    .toolbar-icons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .icon-btn {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      border-radius: 40px;
+      padding: 6px 14px;
+      color: white;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .drop-zone {
+      border: 3px dashed #b59d6e;
+      border-radius: 28px;
+      padding: 40px 20px;
+      margin: 20px;
+      text-align: center;
+      cursor: pointer;
+      background: #fffaf2;
+      transition: all 0.3s;
+    }
+    body.dark .drop-zone {
+      background: #2a2a35;
+      border-color: #9b7b4c;
+    }
+    .drop-zone.drag-over {
+      border-color: #2c5e2a;
+      background: #eef5e6;
+    }
+    .btn {
+      background: #2c5e2a;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 40px;
+      font-size: 14px;
+      cursor: pointer;
+      margin: 5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-danger {
+      background: #9b2c2c;
+    }
+    .btn-secondary {
+      background: #7c6b4a;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+    }
+    body.dark .toolbar {
+      border-bottom-color: #444;
+    }
+    .search-box {
+      padding: 12px 20px;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 12px 20px;
+      border-radius: 40px;
+      border: 1px solid #ddd;
+      font-size: 16px;
+    }
+    body.dark .search-box input {
+      background: #2a2a35;
+      color: white;
+      border-color: #555;
+    }
+    .info-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px 10px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .stats {
+      background: #e9e2d4;
+      border-radius: 40px;
+      padding: 6px 16px;
+      font-size: 0.9rem;
+    }
+    body.dark .stats {
+      background: #2e2e3a;
+    }
+    .index-select {
+      padding: 6px 12px;
+      border-radius: 40px;
+      background: #f0f0f0;
+      border: none;
+    }
+    body.dark .index-select {
+      background: #2a2a35;
+      color: white;
+    }
+    .hadith-list {
+      padding: 20px;
+      max-height: 55vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .hadith-item {
+      background: #fefcf7;
+      border-right: 6px solid #c9a96b;
+      padding: 16px;
+      border-radius: 20px;
+      position: relative;
+    }
+    body.dark .hadith-item {
+      background: #252530;
+    }
+    .hadith-text {
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+    .hadith-meta {
+      font-size: 0.75rem;
+      color: #9b7b4c;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .item-actions {
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      display: flex;
+      gap: 8px;
+    }
+    .item-actions button {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      opacity: 0.6;
+    }
+    .fav-action.favorited {
+      color: gold;
+      opacity: 1;
+    }
+    .compact .hadith-item {
+      padding: 10px;
+    }
+    .compact .hadith-text {
+      font-size: 0.85rem;
+    }
+    .fab {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #2c5e2a;
+      color: white;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      z-index: 100;
+    }
+    .hidden {
+      display: none;
+    }
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2c5e2a;
+      color: white;
+      padding: 8px 20px;
+      border-radius: 40px;
+      z-index: 200;
+      font-size: 14px;
+    }
+    .footer {
+      padding: 16px;
+      text-align: center;
+      font-size: 0.7rem;
+    }
+  </style>
 </head>
 <body>
 <div class="container">
-    <div class="card">
-        <div class="header">
-            <h1>📂 الآغا لقراءة الملفات</h1>
-            <div class="toolbar-icons">
-                <button id="darkModeBtn" class="icon-btn">🌙 ليلي</button>
-                <button id="fontUpBtn" class="icon-btn">🔍+ تكبير</button>
-                <button id="fontDownBtn" class="icon-btn">🔍- تصغير</button>
-                <button id="randomBtn" class="icon-btn">🎲 عشوائي</button>
-                <button id="densityBtn" class="icon-btn">📄 كثيف</button>
-            </div>
-        </div>
-
-        <div id="dropZone" class="drop-zone">
-            <p>📂 اسحب وأفلت ملف JSON هنا</p>
-            <button id="pickFileBtn" class="btn">➕ اختر ملف</button>
-            <input type="file" id="fileInput" accept=".json" style="display:none">
-        </div>
-
-        <div id="appArea" class="hidden">
-            <div class="toolbar">
-                <button id="removeBtn" class="btn btn-danger">🗑️ إزالة</button>
-                <button id="switchBtn" class="btn btn-secondary">🔄 تبديل</button>
-                <button id="showFavBtn" class="btn">⭐ مفضلة فقط</button>
-                <button id="showAllBtn" class="btn">📋 الكل</button>
-                <button id="exportBtn" class="btn">📎 تصدير</button>
-                <button id="statsBtn" class="btn">📊 إحصائيات</button>
-                <button id="exportFavBtn" class="btn">💾 حفظ المفضلة</button>
-                <button id="importFavBtn" class="btn">📂 استيراد مفضلة</button>
-            </div>
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="🔍 ابحث في الأحاديث...">
-            </div>
-            <div class="info-bar">
-                <span id="statsSpan" class="stats"></span>
-                <select id="quickIndex" class="index-select"><option>📑 فهرس سريع</option></select>
-            </div>
-            <div id="hadithContainer" class="hadith-list"></div>
-        </div>
-        <div class="footer">✨ جميع الميزات تعمل بدون إنترنت</div>
+  <div class="card">
+    <div class="header">
+      <h1>📂 الآغا لقراءة الملفات</h1>
+      <div class="toolbar-icons">
+        <button id="darkModeBtn" class="icon-btn">🌙 ليلي</button>
+        <button id="fontUpBtn" class="icon-btn">🔍+ تكبير</button>
+        <button id="fontDownBtn" class="icon-btn">🔍- تصغير</button>
+        <button id="randomBtn" class="icon-btn">🎲 عشوائي</button>
+        <button id="densityBtn" class="icon-btn">📄 كثيف</button>
+      </div>
     </div>
+
+    <div id="dropZone" class="drop-zone">
+      <p>📂 اسحب وأفلت ملف JSON هنا</p>
+      <button id="pickFileBtn" class="btn">➕ اختر ملف</button>
+      <input type="file" id="fileInput" accept=".json" style="display:none">
+    </div>
+
+    <div id="appArea" class="hidden">
+      <div class="toolbar">
+        <button id="removeBtn" class="btn btn-danger">🗑️ إزالة</button>
+        <button id="switchBtn" class="btn btn-secondary">🔄 تبديل</button>
+        <button id="showFavBtn" class="btn">⭐ مفضلة فقط</button>
+        <button id="showAllBtn" class="btn">📋 الكل</button>
+        <button id="exportBtn" class="btn">📎 تصدير</button>
+        <button id="statsBtn" class="btn">📊 إحصائيات</button>
+        <button id="exportFavBtn" class="btn">💾 حفظ المفضلة</button>
+        <button id="importFavBtn" class="btn">📂 استيراد مفضلة</button>
+      </div>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="🔍 ابحث في الأحاديث...">
+      </div>
+      <div class="info-bar">
+        <span id="statsSpan" class="stats"></span>
+        <select id="quickIndex" class="index-select"><option>📑 فهرس سريع</option></select>
+      </div>
+      <div id="hadithContainer" class="hadith-list"></div>
+    </div>
+    <div class="footer">✨ جميع الميزات تعمل بدون إنترنت</div>
+  </div>
 </div>
 <button id="scrollTopBtn" class="fab hidden">↑</button>
 
-<!-- ربط ملف الجافاسكريبت مع التأخير لضمان تحميل DOM -->
-<script src="js/script.js" defer></script>
-</body>
-</html>
+<script>
+  (function(){
+    // ------ عناصر DOM ------
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const pickBtn = document.getElementById('pickFileBtn');
+    const appArea = document.getElementById('appArea');
+    const removeBtn = document.getElementById('removeBtn');
+    const switchBtn = document.getElementById('switchBtn');
+    const showFavBtn = document.getElementById('showFavBtn');
+    const showAllBtn = document.getElementById('showAllBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const statsBtn = document.getElementById('statsBtn');
+    const exportFavBtn = document.getElementById('exportFavBtn');
+    const importFavBtn = document.getElementById('importFavBtn');
+    const searchInput = document.getElementById('searchInput');
+    const statsSpan = document.getElementById('statsSpan');
+    const hadithContainer = document.getElementById('hadithContainer');
+    const quickIndex = document.getElementById('quickIndex');
+    const scrollTopBtn = document.getElementById('scrollTopBtn');
+    const darkModeBtn = document.getElementById('darkModeBtn');
+    const fontUpBtn = document.getElementById('fontUpBtn');
+    const fontDownBtn = document.getElementById('fontDownBtn');
+    const randomBtn = document.getElementById('randomBtn');
+    const densityBtn = document.getElementById('densityBtn');
+
+    // ------ البيانات ------
+    let allHadiths = [];          // كل الأحاديث (بعد الاستخراج)
+    let currentIndices = [];      // الفهارس المعروضة بعد الفلترة والبحث
+    let favoriteIds = new Set();   // مجموعة المعرفات المفضلة
+    let onlyFavorites = false;     // عرض المفضلة فقط؟
+    let fontSize = 16;             // حجم الخط الحالي
+    let compactMode = false;       // وضع العرض الكثيف؟
+    let searchQuery = "";          // نص البحث
+
+    // ------ دوال مساعدة ------
+    function escapeHtml(str) {
+      if(!str) return '';
+      return str.replace(/[&<>]/g, function(m) {
+        if(m === '&') return '&amp;';
+        if(m === '<') return '&lt;';
+        if(m === '>') return '&gt;';
+        return m;
+      });
+    }
+
+    function showToast(msg, isError=false) {
+      let toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerText = msg;
+      toast.style.background = isError ? '#9b2c2c' : '#2c5e2a';
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2000);
+    }
+
+    // حفظ الإعدادات والبيانات في localStorage
+    function saveSettings() {
+      localStorage.setItem('darkMode', document.body.classList.contains('dark'));
+      localStorage.setItem('fontSize', fontSize);
+      localStorage.setItem('compactMode', compactMode);
+      localStorage.setItem('favorites', JSON.stringify([...favoriteIds]));
+      if(allHadiths.length) localStorage.setItem('lastHadithData', JSON.stringify(allHadiths));
+    }
+
+    function loadSettings() {
+      if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark');
+      let savedFont = localStorage.getItem('fontSize');
+      if(savedFont) { fontSize = parseInt(savedFont); applyFontSize(); }
+      if(localStorage.getItem('compactMode') === 'true') { compactMode = true; if(hadithContainer) hadithContainer.classList.add('compact'); }
+      let savedFavs = localStorage.getItem('favorites');
+      if(savedFavs) favoriteIds = new Set(JSON.parse(savedFavs));
+      let lastData = localStorage.getItem('lastHadithData');
+      if(lastData) {
+        try {
+          let parsed = JSON.parse(lastData);
+          if(parsed && parsed.length) {
+            allHadiths = parsed;
+            applyFiltersAndRender();
+            if(appArea) appArea.classList.remove('hidden');
+            if(dropZone) dropZone.style.display = 'none';
+            buildQuickIndex();
+          }
+        } catch(e) { console.warn(e); }
+      }
+    }
+
+    function applyFontSize() {
+      document.querySelectorAll('.hadith-text').forEach(el => el.style.fontSize = fontSize + 'px');
+      saveSettings();
+    }
+
+    // ------ ربط أحداث الأزرار الديناميكية (المفضلة، مشاركة، نطق) ------
+    function attachDynamicEvents() {
+      // زر المفضلة (نجمة)
+      document.querySelectorAll('.fav-action').forEach(btn => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          let id = btn.getAttribute('data-id');
+          if(favoriteIds.has(id)) favoriteIds.delete(id);
+          else favoriteIds.add(id);
+          saveSettings();
+          render();
+        };
+      });
+      // زر المشاركة
+      document.querySelectorAll('.share-action').forEach(btn => {
+        btn.onclick = () => {
+          let text = btn.getAttribute('data-text');
+          if(navigator.share) navigator.share({ text });
+          else navigator.clipboard.writeText(text).then(() => showToast('تم نسخ الحديث'));
+        };
+      });
+      // زر النطق (Text-to-Speech)
+      document.querySelectorAll('.tts-action').forEach(btn => {
+        btn.onclick = () => {
+          let text = btn.getAttribute('data-text');
+          let utterance = new SpeechSynthesisUtterance(text);
+          utterance.lang = 'ar';
+          speechSynthesis.cancel();
+          speechSynthesis.speak(utterance);
+        };
+      });
+    }
+
+    // ------ عرض الأحاديث حسب currentIndices و onlyFavorites ------
+    function render() {
+      if(!allHadiths.length) return;
+      let indicesToShow = currentIndices;
+      if(onlyFavorites) {
+        indicesToShow = indicesToShow.filter(idx => favoriteIds.has(allHadiths[idx].id));
+      }
+      if(indicesToShow.length === 0) {
+        hadithContainer.innerHTML = '<div style="text-align:center;padding:20px;">🔍 لا توجد أحاديث مطابقة</div>';
+        statsSpan.innerText = `0 من ${allHadiths.length}`;
+        return;
+      }
+      let html = '';
+      for(let idx of indicesToShow) {
+        let h = allHadiths[idx];
+        let isFav = favoriteIds.has(h.id);
+        let star = isFav ? '⭐' : '☆';
+        html += `
+          <div class="hadith-item" data-id="${h.id}" data-index="${idx}">
+            <div class="item-actions">
+              <button class="fav-action" data-id="${h.id}">${star}</button>
+              <button class="share-action" data-text="${escapeHtml(h.text)}">📤</button>
+              <button class="tts-action" data-text="${escapeHtml(h.text)}">🔊</button>
+            </div>
+            <div class="hadith-text">${escapeHtml(h.text)}</div>
+            <div class="hadith-meta">${h.meta.map(m=>escapeHtml(m)).join(' • ')}</div>
+          </div>
+        `;
+      }
+      hadithContainer.innerHTML = html;
+      let shownCount = indicesToShow.length;
+      let total = allHadiths.length;
+      if(onlyFavorites) statsSpan.innerText = `⭐ المفضلة: ${shownCount} من ${favoriteIds.size}`;
+      else statsSpan.innerText = `📚 عرض ${shownCount} من ${total}`;
+      applyFontSize();
+      if(compactMode) hadithContainer.classList.add('compact');
+      else hadithContainer.classList.remove('compact');
+      attachDynamicEvents();
+    }
+
+    // تطبيق الفلترة (بحث + عرض المفضلة)
+    function applyFiltersAndRender() {
+      if(!allHadiths.length) return;
+      let filtered = [];
+      for(let i=0; i<allHadiths.length; i++) {
+        let h = allHadiths[i];
+        let match = (searchQuery === "") || h.text.includes(searchQuery) || h.rawMeta.includes(searchQuery);
+        if(match) filtered.push(i);
+      }
+      currentIndices = filtered;
+      render();
+      buildQuickIndex();  // تحديث الفهرس السريع
+    }
+
+    // بناء قائمة الفهرس السريع (كل 10 أحاديث)
+    function buildQuickIndex() {
+      if(!quickIndex) return;
+      quickIndex.innerHTML = '<option value="">📑 فهرس سريع</option>';
+      for(let i=0; i<allHadiths.length; i+=10) {
+        let opt = document.createElement('option');
+        opt.value = i;
+        opt.text = `حديث ${i+1} - ${Math.min(i+10, allHadiths.length)}`;
+        quickIndex.appendChild(opt);
+      }
+      quickIndex.onchange = () => {
+        let start = parseInt(quickIndex.value);
+        if(!isNaN(start) && hadithContainer.children[start]) {
+          hadithContainer.children[start].scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        quickIndex.value = "";
+      };
+    }
+
+    // ------ استخراج الأحاديث من JSON (مرن) ------
+    function extractHadiths(jsonData) {
+      let raw = [];
+      if(Array.isArray(jsonData)) raw = jsonData;
+      else if(jsonData.hadiths) raw = jsonData.hadiths;
+      else if(jsonData.data) raw = jsonData.data;
+      else raw = Object.values(jsonData).filter(v => typeof v === 'object');
+      
+      const textFields = ['hadith', 'text', 'content', 'matn', 'الحديث', 'النص', 'body'];
+      const metaFields = ['id', 'number', 'source', 'book', 'grade', 'الدرجة', 'المصدر'];
+      
+      let hadiths = [];
+      for(let i=0; i<raw.length; i++) {
+        let item = raw[i];
+        let text = '';
+        for(let f of textFields) {
+          if(item[f] && typeof item[f]==='string' && item[f].trim()) {
+            text = item[f].trim();
+            break;
+          }
+        }
+        if(!text) continue;
+        
+        let meta = [];
+        let id = null;
+        for(let f of metaFields) {
+          if(item[f] !== undefined && item[f] !== '') {
+            let label = (f==='id'||f==='number') ? 'رقم' : (f==='source' ? 'المصدر' : (f==='grade' ? 'الدرجة' : f));
+            meta.push(`${label}: ${item[f]}`);
+            if(f==='id' || f==='number') id = item[f];
+          }
+        }
+        if(!id) id = 'h_'+i;
+        hadiths.push({
+          id: id,
+          text: text,
+          meta: meta,
+          rawMeta: meta.join(' ')
+        });
+      }
+      
+      if(hadiths.length === 0) {
+        showToast('لم يتم العثور على أحاديث في هذا الملف', true);
+        return false;
+      }
+      allHadiths = hadiths;
+      // تنظيف المفضلة القديمة التي لم تعد موجودة
+      favoriteIds = new Set([...favoriteIds].filter(id => allHadiths.some(h => h.id == id)));
+      saveSettings();
+      applyFiltersAndRender();
+      if(appArea) appArea.classList.remove('hidden');
+      if(dropZone) dropZone.style.display = 'none';
+      buildQuickIndex();
+      showToast(`تم تحميل ${hadiths.length} حديث`);
+      return true;
+    }
+
+    // ------ رفع الملف ومعالجته ------
+    function processUploadedFile(file) {
+      if(!file || !file.name.toLowerCase().endsWith('.json')) {
+        showToast('الرجاء اختيار ملف JSON', true);
+        return;
+      }
+      let reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          let data = JSON.parse(e.target.result);
+          extractHadiths(data);
+        } catch(err) {
+          showToast('خطأ في قراءة الملف: '+err.message, true);
+        }
+      };
+      reader.onerror = () => showToast('فشل في قراءة الملف', true);
+      reader.readAsText(file, 'UTF-8');
+    }
+
+    // ------ إعادة تعيين الواجهة (إزالة الملف) ------
+    function resetUI() {
+      allHadiths = [];
+      currentIndices = [];
+      if(appArea) appArea.classList.add('hidden');
+      if(dropZone) dropZone.style.display = 'block';
+      if(searchInput) searchInput.value = '';
+      searchQuery = '';
+      if(hadithContainer) hadithContainer.innerHTML = '';
+      if(statsSpan) statsSpan.innerText = '';
+      localStorage.removeItem('lastHadithData');
+      showToast('تم إزالة الملف');
+    }
+
+    // ------ ربط الأحداث الثابتة (الأزرار الرئيسية) ------
+    if(pickBtn) pickBtn.onclick = () => fileInput.click();
+    if(fileInput) fileInput.onchange = (e) => { if(e.target.files[0]) processUploadedFile(e.target.files[0]); };
+    
+    if(dropZone) {
+      dropZone.addEventListener('dragover', (e) => e.preventDefault());
+      dropZone.addEventListener('dragenter', () => dropZone.classList.add('drag-over'));
+      dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+      dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+        let file = e.dataTransfer.files[0];
+        if(file) processUploadedFile(file);
+      });
+    }
+    
+    if(removeBtn) removeBtn.onclick = resetUI;
+    if(switchBtn) switchBtn.onclick = () => fileInput.click();
+    if(showFavBtn) showFavBtn.onclick = () => { onlyFavorites = true; applyFiltersAndRender(); };
+    if(showAllBtn) showAllBtn.onclick = () => { onlyFavorites = false; applyFiltersAndRender(); };
+    
+    if(exportBtn) {
+      exportBtn.onclick = () => {
+        if(!allHadiths.length) return;
+        let indices = currentIndices;
+        if(onlyFavorites) indices = indices.filter(idx => favoriteIds.has(allHadiths[idx].id));
+        let dataToExport = indices.map(idx => allHadiths[idx]);
+        let blob = new Blob([JSON.stringify(dataToExport, null, 2)], {type:'application/json'});
+        let a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'exported_hadiths.json';
+        a.click();
+        showToast('تم تصدير النتائج');
+      };
+    }
+    
+    if(statsBtn) {
+      statsBtn.on
